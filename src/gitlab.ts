@@ -6,7 +6,7 @@
  */
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import type { Localized } from '@tessera/sdk';
+import type { Localized } from '@kiosko/sdk';
 
 const execFileAsync = promisify(execFile);
 

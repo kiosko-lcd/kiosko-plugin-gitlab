@@ -3,7 +3,7 @@
  * first, in red) and the merge requests waiting for your review. Both read
  * one shared source, configured once in Settings → Sources.
  */
-import { defineSource, definePlugin, defineWidget, t } from '@tessera/sdk';
+import { defineSource, definePlugin, defineWidget, t } from '@kiosko/sdk';
 import { age, demoMergeRequests, pipelineLook, readMergeRequests, shortRef, type MyMergeRequests } from './gitlab.ts';
 
 export * from './gitlab.ts';
@@ -181,7 +181,7 @@ export default definePlugin({
   name: { en: 'GitLab', es: 'GitLab' },
   version: '0.1.0',
   description: { en: 'Your merge requests\' pipelines and the reviews waiting for you.', es: 'Los pipelines de tus merge requests y las revisiones que te esperan.' },
-  author: 'Tessera',
+  author: 'Kiosko',
   license: 'MIT',
   icon: 'gitlab',
   widgets: [pipelines, reviews],

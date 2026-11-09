@@ -1,24 +1,24 @@
 {
-  "name": "tessera-plugin-gitlab",
+  "name": "kiosko-plugin-gitlab",
   "version": "0.1.0",
   "description": "GitLab cards: the pipelines of your open merge requests and the ones waiting for your review.",
   "type": "module",
   "license": "MIT",
   "author": "Loksly",
   "keywords": [
-    "tessera",
-    "tessera-plugin",
+    "kiosko",
+    "kiosko-plugin",
     "lcd",
     "widgets",
     "dev"
   ],
-  "homepage": "https://github.com/Loksly/tessera-plugin-gitlab#readme",
+  "homepage": "https://github.com/kiosko-lcd/kiosko-plugin-gitlab#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Loksly/tessera-plugin-gitlab.git"
+    "url": "git+https://github.com/kiosko-lcd/kiosko-plugin-gitlab.git"
   },
   "bugs": {
-    "url": "https://github.com/Loksly/tessera-plugin-gitlab/issues"
+    "url": "https://github.com/kiosko-lcd/kiosko-plugin-gitlab/issues"
   },
   "exports": {
     ".": {
@@ -26,7 +26,7 @@
       "default": "./dist/index.js"
     }
   },
-  "tessera": {
+  "kiosko": {
     "plugin": "./dist/index.js",
     "id": "gitlab"
   },
@@ -45,7 +45,7 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@tessera/sdk": "^0.1.0",
+    "@kiosko/sdk": "^0.1.0",
     "@types/node": "^24.0.0",
     "esbuild": "^0.25.0",
     "typescript": "^5.9.3"

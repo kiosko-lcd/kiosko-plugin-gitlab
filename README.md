@@ -1,20 +1,20 @@
-# tessera-plugin-gitlab
+# kiosko-plugin-gitlab
 
 Your merge requests' pipelines and the reviews waiting for you.
 
-A plugin for [Tessera](https://github.com/Loksly/tessera), the widget mosaic for small USB LCD panels.
+A plugin for [Kiosko](https://github.com/kiosko-lcd/kiosko), the widget mosaic for small USB LCD panels.
 
 ![My pipelines](docs/pipelines.png)
 
 ## Install
 
-In Tessera, **Plugins → Install from npm** → `tessera-plugin-gitlab`, then restart Tessera. Or from a terminal:
+In Kiosko, **Plugins → Install from npm** → `kiosko-plugin-gitlab`, then restart Kiosko. Or from a terminal:
 
 ```sh
-npm install --prefix ~/.config/tessera/plugins tessera-plugin-gitlab
+npm install --prefix ~/.config/kiosko/plugins kiosko-plugin-gitlab
 ```
 
-(macOS: `~/Library/Application Support/Tessera/plugins`, Windows: `%APPDATA%\Tessera\plugins`.)
+(macOS: `~/Library/Application Support/Kiosko/plugins`, Windows: `%APPDATA%\Kiosko\plugins`.)
 
 ## Requirements
 
@@ -53,7 +53,7 @@ Uses: `gitlab/merge-requests`.
 
 ### GitLab merge requests — `gitlab/merge-requests`
 
-Your open merge requests and the ones you are asked to review, through glab or a token. Read every 3 min while a widget uses it. Options are set once in Tessera → Settings → Data sources.
+Your open merge requests and the ones you are asked to review, through glab or a token. Read every 3 min while a widget uses it. Options are set once in Kiosko → Settings → Data sources.
 
 | Option | Type | Default | |
 |---|---|---|---|
@@ -67,14 +67,14 @@ Your open merge requests and the ones you are asked to review, through glab or a
 npm install
 npm test          # node:test
 npm run check     # TypeScript
-npm run build     # dist/index.js, what Tessera loads
+npm run build     # dist/index.js, what Kiosko loads
 ```
 
-To try it in a running Tessera without publishing: `tessera plugins link .` and restart Tessera.
+To try it in a running Kiosko without publishing: `kiosko plugins link .` and restart Kiosko.
 
-Working on Tessera and its plugins together: clone them side by side
-(`tessera/` and `tessera-plugins/tessera-plugin-gitlab/`) and run `npm install` in
-`tessera/`; its workspaces link every plugin found in `../tessera-plugins`.
+Working on Kiosko and its plugins together: clone them side by side
+(`kiosko/` and `kiosko-plugins/kiosko-plugin-gitlab/`) and run `npm install` in
+`kiosko/`; its workspaces link every plugin found in `../kiosko-plugins`.
 
 ## License
 
