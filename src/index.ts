@@ -18,9 +18,9 @@ export const mergeRequests = defineSource({
     es: 'Tus merge requests abiertas y las que te piden revisar, con glab o con un token.',
   },
   options: t.object({
-    host: t.string({ placeholder: 'gitlab.com', label: { en: 'GitLab host', es: 'Servidor de GitLab' }, help: { en: 'Empty = glab\'s default host (gitlab.com with a token).', es: 'Vacío = el servidor por defecto de glab (gitlab.com con token).' } }),
+    host: t.string({ placeholder: 'gitlab.com', risk: 'network', label: { en: 'GitLab host', es: 'Servidor de GitLab' }, help: { en: 'Empty = glab\'s default host (gitlab.com with a token).', es: 'Vacío = el servidor por defecto de glab (gitlab.com con token).' } }),
     token: t.string({ secret: true, label: { en: 'Access token', es: 'Token de acceso' }, help: { en: 'A personal access token with read_api. Empty = use the glab CLI and its login.', es: 'Un token personal con read_api. Vacío = usar el CLI glab y su sesión.' } }),
-    bin: t.string({ default: 'glab', format: 'path', advanced: true, label: { en: 'glab command', es: 'Comando glab' } }),
+    bin: t.string({ default: 'glab', format: 'path', risk: 'exec', advanced: true, label: { en: 'glab command', es: 'Comando glab' } }),
   }),
   intervalMs: 3 * 60_000,
   read: ({ options, signal }) => readMergeRequests(options, signal),
