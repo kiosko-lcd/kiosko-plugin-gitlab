@@ -3,10 +3,12 @@
  * first, in red) and the merge requests waiting for your review. Both read
  * one shared source, configured once in Settings → Sources.
  */
-import { defineSource, definePlugin, defineWidget, t } from '@kiosko/sdk';
-import { age, demoMergeRequests, pipelineLook, readMergeRequests, shortRef, type MyMergeRequests } from './gitlab.ts';
+import { defineSource, definePlugin, defineWidget, drawEmpty, listLayout, listOptions, t } from '@kiosko/sdk';
+import { drawLines } from './draw.ts';
+import { demoMergeRequests, pipelineItems, pipelineLook, readMergeRequests, reviewItems, shortRef, type MyMergeRequests } from './gitlab.ts';
 
 export * from './gitlab.ts';
+export * from './draw.ts';
 
 const SOURCE = 'gitlab/merge-requests';
 
@@ -14,8 +16,8 @@ export const mergeRequests = defineSource({
   id: 'merge-requests',
   name: { en: 'GitLab merge requests', es: 'Merge requests de GitLab' },
   description: {
-    en: 'Your open merge requests and the ones you are asked to review, through glab or a token.',
-    es: 'Tus merge requests abiertas y las que te piden revisar, con glab o con un token.',
+    en: 'Your open merge requests, the ones you are asked to review and the ones assigned to you, through glab or a token.',
+    es: 'Tus merge requests abiertas, las que te piden revisar y las que tienes asignadas, con glab o con un token.',
   },
   options: t.object({
     host: t.string({ placeholder: 'gitlab.com', risk: 'network', label: { en: 'GitLab host', es: 'Servidor de GitLab' }, help: { en: 'Empty = glab\'s default host (gitlab.com with a token).', es: 'Vacío = el servidor por defecto de glab (gitlab.com con token).' } }),
@@ -23,6 +25,9 @@ export const mergeRequests = defineSource({
     bin: t.string({ default: 'glab', format: 'path', risk: 'exec', advanced: true, label: { en: 'glab command', es: 'Comando glab' } }),
   }),
   intervalMs: 3 * 60_000,
+  // One GraphQL query per read; more often than once a minute is pointless and eats the API's rate limit.
+  minIntervalMs: 60_000,
+  timeoutMs: 20_000,
   read: ({ options, signal }) => readMergeRequests(options, signal),
   demo: ({ now }) => demoMergeRequests(now),
 });
@@ -36,7 +41,11 @@ const aliasesField = () =>
     valueLabel: { en: 'Show as', es: 'Mostrar como' },
   });
 
+const projectsField = () => t.filter({ label: { en: 'Projects', es: 'Proyectos' } });
+const draftsField = () => t.boolean({ label: { en: 'Include drafts', es: 'Incluir borradores' } });
+
 const dataOf = (sources: Record<string, unknown>) => sources[SOURCE] as MyMergeRequests | undefined;
+const demo = ({ now }: { now: number }) => ({ sources: { [SOURCE]: demoMergeRequests(now) } });
 
 export const pipelines = defineWidget({
   id: 'pipelines',
@@ -51,74 +60,35 @@ export const pipelines = defineWidget({
   size: { min: { w: 280, h: 100 }, preferred: { w: 600, h: 220 } },
   sources: [SOURCE],
   options: t.object({
-    includeDrafts: t.boolean({ label: { en: 'Include drafts', es: 'Incluir borradores' } }),
+    ...listOptions({ layouts: ['one-line', 'detailed'] }),
+    projects: projectsField(),
+    hidePassing: t.boolean({ label: { en: 'Hide passing pipelines', es: 'Ocultar los pipelines que pasan' }, help: { en: 'Only what is broken, running or waiting.', es: 'Sólo lo roto, lo que corre y lo que espera.' } }),
+    includeDrafts: draftsField(),
     aliases: aliasesField(),
   }),
-  render(g, { options, sources, box, theme, kit, t: tr }) {
+  empty: ({ options, sources }) => {
+    const data = dataOf(sources);
+    return Boolean(data) && !pipelineItems(data!, options).length;
+  },
+  render(g, ctx) {
+    const { options, sources, box, theme, t: tr } = ctx;
     const data = dataOf(sources);
     if (!data) return;
-    const { colors, fonts } = theme;
-    const list = data.authored
-      .filter((m) => options.includeDrafts || !m.draft)
-      .map((m) => ({ m, look: pipelineLook(m.pipeline, colors) }))
-      .sort((a, b) => a.look.rank - b.look.rank || b.m.updatedAt.localeCompare(a.m.updatedAt));
-    if (!list.length) {
-      const s = Math.round(Math.min(32, box.h * 0.3));
-      kit.drawTracked(g, kit.truncate(g, tr({ en: 'No open merge requests', es: 'Ninguna MR abierta' }), box.w, { size: s, family: fonts.sans }), box.x, box.y + s * 1.1, { size: s, family: fonts.sans, color: colors.inkDim });
-      return;
-    }
-    const more = (n: number, x: number, y: number, size: number) =>
-      kit.drawTracked(g, `+${n} ${tr({ en: 'more', es: 'más' })}`, x, y, { size, family: fonts.sans, color: colors.inkDim });
-    // Tall tiles: two lines per merge request (title; reference and status).
-    if (box.h >= box.w * 0.7 && box.h / list.length >= 50) {
-      const rowH = Math.min(80, box.h / list.length, box.w / 5);
-      const ts = Math.round(rowH * 0.4), ms = Math.round(rowH * 0.3);
-      const rows = Math.max(1, Math.floor(box.h / rowH + 0.1));
-      const shown = list.length <= rows ? list : list.slice(0, rows - 1);
-      const dot = ts * 0.28;
-      const tx = box.x + dot * 3.4;
-      shown.forEach(({ m, look }, i) => {
-        const top = box.y + i * rowH;
-        g.fillStyle = look.color;
-        g.beginPath();
-        g.arc(box.x + dot * 1.1, top + ts * 0.66, dot, 0, Math.PI * 2);
-        g.fill();
-        const o = { size: ts, family: fonts.sans, color: look.rank === 0 ? colors.ink : colors.inkDim };
-        kit.drawTracked(g, kit.truncate(g, m.title, box.x + box.w - tx, o), tx, top + ts, o);
-        const lw = kit.drawTracked(g, tr(look.label), tx, top + ts + ms * 1.45, { size: ms, family: fonts.sans, color: look.color });
-        const ref = { size: ms, family: fonts.mono, color: colors.inkDim };
-        kit.drawTracked(g, kit.truncate(g, shortRef(m.reference, options.aliases), box.x + box.w - tx - lw - ms, ref), tx + lw + ms * 0.8, top + ts + ms * 1.45, ref);
-      });
-      if (shown.length < list.length) more(list.length - shown.length, tx, box.y + shown.length * rowH + ts, ms);
-      return;
-    }
-    const rowH = Math.max(22, Math.min(46, box.h / Math.max(3, list.length), box.w / 10));
-    const rows = Math.max(1, Math.floor(box.h / rowH + 0.1));
-    const shown = list.length <= rows ? list : list.slice(0, rows - 1);
-    const ref = { size: Math.round(rowH * 0.56), family: fonts.mono };
-    const lab = { size: Math.round(rowH * 0.56), family: fonts.sans };
-    const refs = shown.map(({ m }) => shortRef(m.reference, options.aliases));
-    const refW = Math.max(...refs.map((r) => kit.measureTracked(g, r, ref)));
-    const labW = Math.max(...shown.map(({ look }) => kit.measureTracked(g, tr(look.label), lab)));
-    const dot = rowH * 0.2;
-    const x0 = box.x + dot * 3.4;
-    // References only when they leave the titles at least half the width.
-    const withRef = box.x + box.w - x0 - refW - labW - rowH * 0.8 >= box.w * 0.5;
-    shown.forEach(({ m, look }, i) => {
-      const base = box.y + i * rowH + rowH * 0.72;
-      g.fillStyle = look.color;
-      g.beginPath();
-      g.arc(box.x + dot * 1.1, base - rowH * 0.22, dot, 0, Math.PI * 2);
-      g.fill();
-      if (withRef) kit.drawTracked(g, refs[i]!, x0, base, { ...ref, color: colors.inkDim });
-      const lw = kit.drawTracked(g, tr(look.label), box.x + box.w, base, { ...lab, color: look.color, align: 'right' });
-      const tx = withRef ? x0 + refW + rowH * 0.4 : x0;
-      const o = { size: Math.round(rowH * 0.7), family: fonts.sans, color: look.rank === 0 ? colors.ink : colors.inkDim };
-      kit.drawTracked(g, kit.truncate(g, m.title, box.x + box.w - lw - rowH * 0.4 - tx, o), tx, base, o);
+    const { colors } = theme;
+    const list = pipelineItems(data, options);
+    if (!list.length) return drawEmpty(g, ctx, tr({ en: 'No open merge requests', es: 'Ninguna MR abierta' }));
+    const plan = listLayout(box, list.length, options, {
+      sizes: { 'one-line': { min: 22, max: Math.max(22, Math.min(46, box.w / 10)) }, detailed: { min: 40, max: Math.max(40, Math.min(80, box.w / 5)) } },
+      // Tall tiles with room: two lines per merge request (title; status and reference).
+      auto: (b, n) => (b.h >= b.w * 0.7 && b.h / n >= 50 ? 'detailed' : 'one-line'),
+      minRows: 3,
     });
-    if (shown.length < list.length) more(list.length - shown.length, x0, box.y + shown.length * rowH + rowH * 0.72, lab.size);
+    drawLines(g, ctx, plan, list.map((m) => {
+      const look = pipelineLook(m.pipeline, colors);
+      return { color: look.color, title: m.title, strong: look.rank === 0, ref: shortRef(m.reference, options.aliases), status: tr(look.label) };
+    }), { dots: true });
   },
-  demo: ({ now }) => ({ sources: { [SOURCE]: demoMergeRequests(now) } }),
+  demo,
 });
 
 export const reviews = defineWidget({
@@ -134,46 +104,51 @@ export const reviews = defineWidget({
   size: { min: { w: 280, h: 100 }, preferred: { w: 600, h: 220 } },
   sources: [SOURCE],
   options: t.object({
-    includeDrafts: t.boolean({ label: { en: 'Include drafts', es: 'Incluir borradores' } }),
+    ...listOptions({ layouts: ['one-line', 'detailed'] }),
+    projects: projectsField(),
+    includeDrafts: draftsField(),
     hideApproved: t.boolean({ label: { en: 'Hide the ones I approved', es: 'Ocultar las que ya aprobé' } }),
+    includeAssigned: t.boolean({
+      label: { en: 'Include the ones assigned to me', es: 'Incluir las que tengo asignadas' },
+      help: { en: 'For teams that assign a merge request to its reviewer instead of requesting a review. Your own are left out.', es: 'Para equipos que asignan la merge request a quien la revisa en vez de pedirle revisión. Las tuyas no se cuentan.' },
+    }),
     aliases: aliasesField(),
   }),
+  hideWhenEmpty: true,
   redraw: 'minute',
-  visible: ({ options, sources }) => {
+  empty: ({ options, sources }) => {
     const data = dataOf(sources);
-    return Boolean(data?.toReview.some((m) => (options.includeDrafts || !m.draft) && !(options.hideApproved && m.approvedBy.includes(data.me))));
+    return Boolean(data) && !reviewItems(data!, options).length;
   },
-  render(g, { options, sources, now, box, theme, kit, t: tr, locale }) {
+  render(g, ctx) {
+    const { options, sources, box, theme, fmt, t: tr } = ctx;
     const data = dataOf(sources);
     if (!data) return;
-    const { colors, fonts } = theme;
-    const list = data.toReview
-      .filter((m) => options.includeDrafts || !m.draft)
-      .map((m) => ({ m, done: m.approvedBy.includes(data.me) }))
-      .filter((x) => !(options.hideApproved && x.done))
-      // Pending first and, among them, whatever has waited longest.
-      .sort((a, b) => Number(a.done) - Number(b.done) || a.m.createdAt.localeCompare(b.m.createdAt));
-    if (!list.length) {
-      const s = Math.round(Math.min(32, box.h * 0.3));
-      kit.drawTracked(g, kit.truncate(g, tr({ en: 'Nothing to review', es: 'Nada que revisar' }), box.w, { size: s, family: fonts.sans }), box.x, box.y + s * 1.1, { size: s, family: fonts.sans, color: colors.inkDim });
-      return;
-    }
-    const rowH = Math.max(40, Math.min(84, box.h / Math.max(2, list.length), box.w / 5.5));
-    const rows = Math.max(1, Math.floor(box.h / rowH + 0.1));
-    const ts = Math.round(rowH * 0.4), ms = Math.round(rowH * 0.28);
-    list.slice(0, rows).forEach(({ m, done }, i) => {
-      const top = box.y + i * rowH;
-      const look = pipelineLook(m.pipeline, colors);
-      const t1 = { size: ts, family: fonts.sans, color: done ? colors.inkDim : colors.ink };
-      kit.drawTracked(g, kit.truncate(g, m.title, box.w, t1), box.x, top + ts * 1.0, t1);
-      // The pipeline status first, in its colour; then whose it is and how long it has waited.
-      const lw = kit.drawTracked(g, tr(look.label), box.x, top + ts + ms * 1.45, { size: ms, family: fonts.sans, color: done ? colors.inkDim : look.color });
-      const meta = `${shortRef(m.reference, options.aliases)} · ${m.author} · ${age(m.createdAt, now, locale)}${done ? ` · ${tr({ en: 'approved', es: 'aprobada' })}` : ''}`;
-      const mo = { size: ms, family: fonts.mono, color: colors.inkDim };
-      kit.drawTracked(g, kit.truncate(g, meta, box.w - lw - ms, mo), box.x + lw + ms * 0.8, top + ts + ms * 1.45, mo);
+    const { colors } = theme;
+    const list = reviewItems(data, options);
+    if (!list.length) return drawEmpty(g, ctx, tr({ en: 'Nothing to review', es: 'Nada que revisar' }));
+    const plan = listLayout(box, list.length, options, {
+      sizes: { 'one-line': { min: 22, max: Math.max(22, Math.min(46, box.w / 10)) }, detailed: { min: 40, max: Math.max(40, Math.min(84, box.w / 5.5)) } },
+      // Two lines (whose, how long) while every row gets room for them; one line when that shows more of the list.
+      auto: (b, n) => (b.h / Math.max(1, n) >= 40 ? 'detailed' : 'one-line'),
+      minRows: 2,
     });
+    drawLines(g, ctx, plan, list.map(({ m, done }) => {
+      const look = pipelineLook(m.pipeline, colors);
+      const waited = fmt.ago(m.createdAt, { suffix: false });
+      return {
+        // The pipeline status first, in its colour; then whose it is and how long it has waited.
+        color: done ? colors.inkDim : look.color,
+        title: m.title,
+        strong: !done,
+        ref: shortRef(m.reference, options.aliases),
+        status: tr(look.label),
+        meta: ` · ${m.author} · ${waited}${done ? ` · ${tr({ en: 'approved', es: 'aprobada' })}` : ''}`,
+        aside: waited,
+      };
+    }), { dots: false });
   },
-  demo: ({ now }) => ({ sources: { [SOURCE]: demoMergeRequests(now) } }),
+  demo,
 });
 
 export default definePlugin({

@@ -1,12 +1,12 @@
 /**
- * Your open merge requests and the ones waiting for your review, from a
- * single GraphQL query to GitLab: through the `glab` CLI (already logged in)
- * or, with a token, straight over HTTPS. Shared by `pipelines` and `reviews`
- * as one source, so both cards cost one call.
+ * Your open merge requests, the ones waiting for your review and the ones
+ * assigned to you, from a single GraphQL query to GitLab: through the `glab`
+ * CLI (already logged in) or, with a token, straight over HTTPS. Shared by
+ * `pipelines` and `reviews` as one source, so both cards cost one call.
  */
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import type { Localized } from '@kiosko/sdk';
+import { matchFilter, type Filter, type Localized } from '@kiosko/sdk';
 
 const execFileAsync = promisify(execFile);
 
@@ -28,11 +28,16 @@ export interface MyMergeRequests {
   me: string;
   authored: MergeRequest[];
   toReview: MergeRequest[];
+  /** Assigned to you (yours included): teams that assign a merge request to its reviewer instead of requesting a review. */
+  assigned: MergeRequest[];
 }
 
+const MR_FIELDS = 'nodes { reference(full: true) title draft createdAt updatedAt author { username } approvedBy { nodes { username } } headPipeline { status } }';
+
 export const QUERY = `{ currentUser { username
-  authoredMergeRequests(state: opened, first: 50) { nodes { reference(full: true) title draft createdAt updatedAt author { username } approvedBy { nodes { username } } headPipeline { status } } }
-  reviewRequestedMergeRequests(state: opened, first: 50) { nodes { reference(full: true) title draft createdAt updatedAt author { username } approvedBy { nodes { username } } headPipeline { status } } } } }`;
+  authoredMergeRequests(state: opened, first: 50) { ${MR_FIELDS} }
+  reviewRequestedMergeRequests(state: opened, first: 50) { ${MR_FIELDS} }
+  assignedMergeRequests(state: opened, first: 50) { ${MR_FIELDS} } } }`;
 
 interface Node {
   reference: string;
@@ -46,7 +51,8 @@ interface Node {
 }
 
 export function parseMergeRequests(json: string): MyMergeRequests {
-  const d = JSON.parse(json) as { errors?: { message?: string }[]; data?: { currentUser?: { username: string; authoredMergeRequests?: { nodes: Node[] }; reviewRequestedMergeRequests?: { nodes: Node[] } } | null } };
+  type Nodes = { nodes: Node[] };
+  const d = JSON.parse(json) as { errors?: { message?: string }[]; data?: { currentUser?: { username: string; authoredMergeRequests?: Nodes; reviewRequestedMergeRequests?: Nodes; assignedMergeRequests?: Nodes } | null } };
   if (d.errors?.length) throw new Error(d.errors[0]?.message ?? 'GraphQL error');
   const u = d.data?.currentUser;
   if (!u) throw new Error('not logged in to GitLab (no current user)');
@@ -60,7 +66,12 @@ export function parseMergeRequests(json: string): MyMergeRequests {
     approvedBy: (n.approvedBy?.nodes ?? []).map((a) => a.username),
     pipeline: n.headPipeline?.status ?? null,
   });
-  return { me: u.username, authored: (u.authoredMergeRequests?.nodes ?? []).map(map), toReview: (u.reviewRequestedMergeRequests?.nodes ?? []).map(map) };
+  return {
+    me: u.username,
+    authored: (u.authoredMergeRequests?.nodes ?? []).map(map),
+    toReview: (u.reviewRequestedMergeRequests?.nodes ?? []).map(map),
+    assigned: (u.assignedMergeRequests?.nodes ?? []).map(map),
+  };
 }
 
 /** `gitlab.example.com` → `https://gitlab.example.com/api/graphql`. */
@@ -78,39 +89,46 @@ export interface Connection {
   token: string;
 }
 
+/** One read. `signal` aborts it (Kiosko aborts it after the source's `timeoutMs`). */
 export async function readMergeRequests(c: Connection, signal: AbortSignal): Promise<MyMergeRequests> {
   if (c.token.trim()) {
     const res = await fetch(graphqlUrl(c.host), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${c.token.trim()}` },
       body: JSON.stringify({ query: QUERY }),
-      signal: AbortSignal.any([signal, AbortSignal.timeout(20_000)]),
+      signal,
     });
     if (!res.ok) throw new Error(`GitLab HTTP ${res.status}`);
     return parseMergeRequests(await res.text());
   }
   const args = ['api', 'graphql', '-f', `query=${QUERY}`, ...(c.host.trim() ? ['--hostname', c.host.trim().replace(/^https?:\/\//, '').replace(/\/+$/, '')] : [])];
-  const { stdout } = await execFileAsync(c.bin || 'glab', args, { timeout: 20_000, maxBuffer: 8_000_000, signal });
+  const { stdout } = await execFileAsync(c.bin || 'glab', args, { maxBuffer: 8_000_000, signal });
   return parseMergeRequests(stdout);
+}
+
+/** `group/web-app!412` → `group/web-app`. */
+export function projectOf(reference: string): string {
+  return reference.split('!')[0] ?? reference;
+}
+
+/** The alias of a merge request's project (by project name or full path), if it has one. */
+export function aliasOf(reference: string, aliases: Record<string, string> = {}): string | undefined {
+  const path = projectOf(reference);
+  return aliases[path.split('/').pop() ?? path] ?? aliases[path];
 }
 
 /** `group/web-app!412` → `web-app!412`; aliases (by project name) win; long names are cut. */
 export function shortRef(reference: string, aliases: Record<string, string> = {}): string {
-  const [path = '', iid = ''] = reference.split('!');
-  const project = path.split('/').pop() ?? path;
-  const name = aliases[project] ?? aliases[path] ?? project;
+  const path = projectOf(reference);
+  const iid = reference.split('!')[1] ?? '';
+  const name = aliasOf(reference, aliases) ?? path.split('/').pop() ?? path;
   return `${name.length > 10 ? `${name.slice(0, 9)}…` : name}!${iid}`;
 }
 
-/** "3 h", "2 d", "5 wk", "1 y" (Spanish: "5 sem", "1 a"): age at a glance. */
-export function age(iso: string, now: number, locale = 'en'): string {
-  const es = /^es(?:$|[-_])/i.test(locale);
-  const h = Math.max(0, (now - Date.parse(iso)) / 3_600_000);
-  if (h < 24) return `${Math.max(1, Math.round(h))} h`;
-  const d = h / 24;
-  if (d < 14) return `${Math.round(d)} d`;
-  if (d < 365) return `${Math.round(d / 7)} ${es ? 'sem' : 'wk'}`;
-  return `${Math.round(d / 365)} ${es ? 'a' : 'y'}`;
+/** Whether the merge request's project passes a `projects` filter: by its path, its name or its alias. */
+export function inProjects(m: Pick<MergeRequest, 'reference'>, projects: Filter, aliases: Record<string, string> = {}): boolean {
+  const alias = aliasOf(m.reference, aliases);
+  return matchFilter(alias ? [projectOf(m.reference), alias] : projectOf(m.reference), projects);
 }
 
 export interface Look {
@@ -134,6 +152,55 @@ export function pipelineLook(status: PipelineStatus | null, colors: { alert: str
   }
 }
 
+const PLAIN = { alert: '', warn: '', info: '', ok: '', inkDim: '' };
+
+/** Options of `gitlab/pipelines` that choose which merge requests it lists. */
+export interface PipelineFilter {
+  includeDrafts: boolean;
+  hidePassing: boolean;
+  projects: Filter;
+  aliases: Record<string, string>;
+}
+
+/** Your merge requests as `gitlab/pipelines` lists them: broken first, then the most recently updated. */
+export function pipelineItems(data: MyMergeRequests, o: PipelineFilter): MergeRequest[] {
+  return data.authored
+    .filter((m) => (o.includeDrafts || !m.draft) && !(o.hidePassing && m.pipeline === 'SUCCESS') && inProjects(m, o.projects, o.aliases))
+    .map((m) => ({ m, rank: pipelineLook(m.pipeline, PLAIN).rank }))
+    .sort((a, b) => a.rank - b.rank || b.m.updatedAt.localeCompare(a.m.updatedAt))
+    .map((x) => x.m);
+}
+
+/** Options of `gitlab/reviews` that choose which merge requests it lists. */
+export interface ReviewFilter {
+  includeDrafts: boolean;
+  hideApproved: boolean;
+  includeAssigned: boolean;
+  projects: Filter;
+  aliases: Record<string, string>;
+}
+
+/**
+ * The merge requests `gitlab/reviews` lists: the ones you're asked to review
+ * (and, with `includeAssigned`, someone else's assigned to you), each once.
+ * Pending first and, among them, whatever has waited longest; `done` = you
+ * approved it.
+ */
+export function reviewItems(data: MyMergeRequests, o: ReviewFilter): { m: MergeRequest; done: boolean }[] {
+  const seen = new Set<string>();
+  const all = [...data.toReview, ...(o.includeAssigned ? (data.assigned ?? []).filter((m) => m.author !== data.me) : [])];
+  return all
+    .filter((m) => {
+      if (seen.has(m.reference)) return false;
+      seen.add(m.reference);
+      return true;
+    })
+    .filter((m) => (o.includeDrafts || !m.draft) && inProjects(m, o.projects, o.aliases))
+    .map((m) => ({ m, done: m.approvedBy.includes(data.me) }))
+    .filter((x) => !(o.hideApproved && x.done))
+    .sort((a, b) => Number(a.done) - Number(b.done) || a.m.createdAt.localeCompare(b.m.createdAt));
+}
+
 /** Sample data for the gallery: made-up projects and people. */
 export function demoMergeRequests(now: number): MyMergeRequests {
   const ago = (h: number) => new Date(now - h * 3_600_000).toISOString();
@@ -153,6 +220,10 @@ export function demoMergeRequests(now: number): MyMergeRequests {
       mr('acme/api!91', 'Cache user permissions per request', 'RUNNING', 26, { author: 'sam' }),
       mr('acme/infra!12', 'Rotate the staging certificates', 'FAILED', 3, { author: 'jordan' }),
       mr('acme/web-app!398', 'Move the charts to the new library', 'SUCCESS', 130, { author: 'alex', approvedBy: ['you'] }),
+    ],
+    assigned: [
+      mr('acme/web-app!412', 'Fix the flaky login test', 'FAILED', 30),
+      mr('acme/mobile!21', 'Push notifications for replies', 'SUCCESS', 70, { author: 'riley' }),
     ],
   };
 }
