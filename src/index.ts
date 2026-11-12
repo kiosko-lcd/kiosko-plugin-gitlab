@@ -154,7 +154,7 @@ export const reviews = defineWidget({
 export default definePlugin({
   id: 'gitlab',
   name: { en: 'GitLab', es: 'GitLab' },
-  version: '0.1.0',
+  version: '0.2.0',
   description: { en: 'Your merge requests\' pipelines and the reviews waiting for you.', es: 'Los pipelines de tus merge requests y las revisiones que te esperan.' },
   author: 'Kiosko',
   license: 'MIT',
