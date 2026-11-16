@@ -155,6 +155,8 @@ export default definePlugin({
   id: 'gitlab',
   name: { en: 'GitLab', es: 'GitLab' },
   version: '0.2.0',
+  sdk: '^0.2.0',
+  permissions: { network: ['gitlab.com', 'user'], exec: ['glab'] },
   description: { en: 'Your merge requests\' pipelines and the reviews waiting for you.', es: 'Los pipelines de tus merge requests y las revisiones que te esperan.' },
   author: 'Kiosko',
   license: 'MIT',
