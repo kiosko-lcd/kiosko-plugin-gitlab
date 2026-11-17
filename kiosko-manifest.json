@@ -1,0 +1,507 @@
+{
+  "manifest": 1,
+  "id": "gitlab",
+  "package": "kiosko-plugin-gitlab",
+  "name": {
+    "en": "GitLab",
+    "es": "GitLab"
+  },
+  "version": "0.2.1",
+  "description": {
+    "en": "Your merge requests' pipelines and the reviews waiting for you.",
+    "es": "Los pipelines de tus merge requests y las revisiones que te esperan."
+  },
+  "author": "Kiosko",
+  "license": "MIT",
+  "homepage": "https://github.com/kiosko-lcd/kiosko-plugin-gitlab#readme",
+  "repository": "https://github.com/kiosko-lcd/kiosko-plugin-gitlab.git",
+  "icon": "gitlab",
+  "sdk": "^0.2.0",
+  "platforms": [
+    "linux",
+    "darwin",
+    "win32"
+  ],
+  "languages": [
+    "en",
+    "es"
+  ],
+  "categories": [
+    "dev"
+  ],
+  "tags": [
+    "gitlab",
+    "ci",
+    "code review"
+  ],
+  "permissions": {
+    "network": [
+      "gitlab.com",
+      "user"
+    ],
+    "exec": [
+      "glab"
+    ]
+  },
+  "riskyOptions": [
+    {
+      "path": "gitlab/merge-requests: host",
+      "risk": [
+        "network"
+      ],
+      "secret": false
+    },
+    {
+      "path": "gitlab/merge-requests: token",
+      "risk": [],
+      "secret": true
+    },
+    {
+      "path": "gitlab/merge-requests: bin",
+      "risk": [
+        "exec"
+      ],
+      "secret": false
+    }
+  ],
+  "requires": [],
+  "optional": [],
+  "widgets": [
+    {
+      "type": "gitlab/pipelines",
+      "name": {
+        "en": "My pipelines",
+        "es": "Mis pipelines"
+      },
+      "description": {
+        "en": "The pipeline of each of your open merge requests: broken first, then running and queued, passing last.",
+        "es": "El pipeline de cada una de tus merge requests abiertas: lo roto primero, luego lo que corre y espera, lo que pasa al final."
+      },
+      "icon": "git-pull-request",
+      "category": "dev",
+      "tags": [
+        "gitlab",
+        "ci"
+      ],
+      "size": {
+        "min": {
+          "w": 280,
+          "h": 100
+        },
+        "preferred": {
+          "w": 600,
+          "h": 220
+        }
+      },
+      "chrome": "card",
+      "sources": [
+        "gitlab/merge-requests"
+      ],
+      "options": {
+        "default": {
+          "rows": 0,
+          "layout": "auto",
+          "projects": [],
+          "hidePassing": false,
+          "includeDrafts": false,
+          "aliases": {}
+        },
+        "x-ui": {},
+        "type": "object",
+        "properties": {
+          "rows": {
+            "title": "Rows",
+            "description": "0 = as many as fit. A number shows that many, in rows of a readable size (fewer when the tile is too small for them); the rest are counted in \"+N more\".",
+            "default": 0,
+            "x-ui": {
+              "label": {
+                "en": "Rows",
+                "es": "Filas"
+              },
+              "help": {
+                "en": "0 = as many as fit. A number shows that many, in rows of a readable size (fewer when the tile is too small for them); the rest are counted in \"+N more\".",
+                "es": "0 = las que quepan. Con un número se ven esas, en filas de un tamaño legible (menos si la tesela no da para ellas); el resto se cuenta en «+N más»."
+              }
+            },
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 30
+          },
+          "layout": {
+            "title": "Row layout",
+            "description": "Automatic: the widget picks by the tile's shape.",
+            "default": "auto",
+            "x-ui": {
+              "label": {
+                "en": "Row layout",
+                "es": "Formato de fila"
+              },
+              "help": {
+                "en": "Automatic: the widget picks by the tile's shape.",
+                "es": "Automático: el widget elige según la forma de la tesela."
+              },
+              "labels": {
+                "auto": {
+                  "en": "Automatic",
+                  "es": "Automático"
+                },
+                "one-line": {
+                  "en": "One line",
+                  "es": "Una línea"
+                },
+                "detailed": {
+                  "en": "Detailed",
+                  "es": "Detallado"
+                }
+              }
+            },
+            "type": "string",
+            "enum": [
+              "auto",
+              "one-line",
+              "detailed"
+            ]
+          },
+          "projects": {
+            "title": "Projects",
+            "description": "Empty: all. Names or patterns, comma-separated: * matches anything, a leading ! leaves out (web, acme/*, !*-old).",
+            "default": [],
+            "x-ui": {
+              "label": {
+                "en": "Projects",
+                "es": "Proyectos"
+              },
+              "help": {
+                "en": "Empty: all. Names or patterns, comma-separated: * matches anything, a leading ! leaves out (web, acme/*, !*-old).",
+                "es": "Vacío: todos. Nombres o patrones separados por comas: * vale por cualquier cosa y un ! delante excluye (web, acme/*, !*-old)."
+              },
+              "widget": "filter"
+            },
+            "type": "array",
+            "items": {
+              "default": "",
+              "x-ui": {
+                "placeholder": "name, group/*, !old-*"
+              },
+              "type": "string"
+            },
+            "x-filter": true
+          },
+          "hidePassing": {
+            "title": "Hide passing pipelines",
+            "description": "Only what is broken, running or waiting.",
+            "default": false,
+            "x-ui": {
+              "label": {
+                "en": "Hide passing pipelines",
+                "es": "Ocultar los pipelines que pasan"
+              },
+              "help": {
+                "en": "Only what is broken, running or waiting.",
+                "es": "Sólo lo roto, lo que corre y lo que espera."
+              }
+            },
+            "type": "boolean"
+          },
+          "includeDrafts": {
+            "title": "Include drafts",
+            "default": false,
+            "x-ui": {
+              "label": {
+                "en": "Include drafts",
+                "es": "Incluir borradores"
+              }
+            },
+            "type": "boolean"
+          },
+          "aliases": {
+            "title": "Short project names",
+            "description": "Project (as in its path) → what to show, e.g. web-frontend → web.",
+            "default": {},
+            "x-ui": {
+              "label": {
+                "en": "Short project names",
+                "es": "Nombres cortos de proyecto"
+              },
+              "help": {
+                "en": "Project (as in its path) → what to show, e.g. web-frontend → web.",
+                "es": "Proyecto (como en su ruta) → lo que se muestra, p. ej. web-frontend → web."
+              },
+              "advanced": true
+            },
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "screenshot": "docs/pipelines.png",
+      "animated": false,
+      "urgent": false
+    },
+    {
+      "type": "gitlab/reviews",
+      "name": {
+        "en": "Reviews for me",
+        "es": "Te toca revisar"
+      },
+      "description": {
+        "en": "Merge requests waiting for your review: whose, how long they have waited and how their pipeline is doing. The ones you approved sink, dimmed.",
+        "es": "Las merge requests que te toca revisar: de quién son, cuánto llevan esperando y cómo va su pipeline. Las que ya aprobaste bajan, atenuadas."
+      },
+      "icon": "git-branch",
+      "category": "dev",
+      "tags": [
+        "gitlab",
+        "code review"
+      ],
+      "size": {
+        "min": {
+          "w": 280,
+          "h": 100
+        },
+        "preferred": {
+          "w": 600,
+          "h": 220
+        }
+      },
+      "chrome": "card",
+      "sources": [
+        "gitlab/merge-requests"
+      ],
+      "options": {
+        "default": {
+          "rows": 0,
+          "layout": "auto",
+          "projects": [],
+          "includeDrafts": false,
+          "hideApproved": false,
+          "includeAssigned": false,
+          "aliases": {}
+        },
+        "x-ui": {},
+        "type": "object",
+        "properties": {
+          "rows": {
+            "title": "Rows",
+            "description": "0 = as many as fit. A number shows that many, in rows of a readable size (fewer when the tile is too small for them); the rest are counted in \"+N more\".",
+            "default": 0,
+            "x-ui": {
+              "label": {
+                "en": "Rows",
+                "es": "Filas"
+              },
+              "help": {
+                "en": "0 = as many as fit. A number shows that many, in rows of a readable size (fewer when the tile is too small for them); the rest are counted in \"+N more\".",
+                "es": "0 = las que quepan. Con un número se ven esas, en filas de un tamaño legible (menos si la tesela no da para ellas); el resto se cuenta en «+N más»."
+              }
+            },
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 30
+          },
+          "layout": {
+            "title": "Row layout",
+            "description": "Automatic: the widget picks by the tile's shape.",
+            "default": "auto",
+            "x-ui": {
+              "label": {
+                "en": "Row layout",
+                "es": "Formato de fila"
+              },
+              "help": {
+                "en": "Automatic: the widget picks by the tile's shape.",
+                "es": "Automático: el widget elige según la forma de la tesela."
+              },
+              "labels": {
+                "auto": {
+                  "en": "Automatic",
+                  "es": "Automático"
+                },
+                "one-line": {
+                  "en": "One line",
+                  "es": "Una línea"
+                },
+                "detailed": {
+                  "en": "Detailed",
+                  "es": "Detallado"
+                }
+              }
+            },
+            "type": "string",
+            "enum": [
+              "auto",
+              "one-line",
+              "detailed"
+            ]
+          },
+          "projects": {
+            "title": "Projects",
+            "description": "Empty: all. Names or patterns, comma-separated: * matches anything, a leading ! leaves out (web, acme/*, !*-old).",
+            "default": [],
+            "x-ui": {
+              "label": {
+                "en": "Projects",
+                "es": "Proyectos"
+              },
+              "help": {
+                "en": "Empty: all. Names or patterns, comma-separated: * matches anything, a leading ! leaves out (web, acme/*, !*-old).",
+                "es": "Vacío: todos. Nombres o patrones separados por comas: * vale por cualquier cosa y un ! delante excluye (web, acme/*, !*-old)."
+              },
+              "widget": "filter"
+            },
+            "type": "array",
+            "items": {
+              "default": "",
+              "x-ui": {
+                "placeholder": "name, group/*, !old-*"
+              },
+              "type": "string"
+            },
+            "x-filter": true
+          },
+          "includeDrafts": {
+            "title": "Include drafts",
+            "default": false,
+            "x-ui": {
+              "label": {
+                "en": "Include drafts",
+                "es": "Incluir borradores"
+              }
+            },
+            "type": "boolean"
+          },
+          "hideApproved": {
+            "title": "Hide the ones I approved",
+            "default": false,
+            "x-ui": {
+              "label": {
+                "en": "Hide the ones I approved",
+                "es": "Ocultar las que ya aprobé"
+              }
+            },
+            "type": "boolean"
+          },
+          "includeAssigned": {
+            "title": "Include the ones assigned to me",
+            "description": "For teams that assign a merge request to its reviewer instead of requesting a review. Your own are left out.",
+            "default": false,
+            "x-ui": {
+              "label": {
+                "en": "Include the ones assigned to me",
+                "es": "Incluir las que tengo asignadas"
+              },
+              "help": {
+                "en": "For teams that assign a merge request to its reviewer instead of requesting a review. Your own are left out.",
+                "es": "Para equipos que asignan la merge request a quien la revisa en vez de pedirle revisión. Las tuyas no se cuentan."
+              }
+            },
+            "type": "boolean"
+          },
+          "aliases": {
+            "title": "Short project names",
+            "description": "Project (as in its path) → what to show, e.g. web-frontend → web.",
+            "default": {},
+            "x-ui": {
+              "label": {
+                "en": "Short project names",
+                "es": "Nombres cortos de proyecto"
+              },
+              "help": {
+                "en": "Project (as in its path) → what to show, e.g. web-frontend → web.",
+                "es": "Proyecto (como en su ruta) → lo que se muestra, p. ej. web-frontend → web."
+              },
+              "advanced": true
+            },
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "screenshot": "docs/reviews.png",
+      "animated": false,
+      "urgent": false
+    }
+  ],
+  "sources": [
+    {
+      "type": "gitlab/merge-requests",
+      "name": {
+        "en": "GitLab merge requests",
+        "es": "Merge requests de GitLab"
+      },
+      "description": {
+        "en": "Your open merge requests, the ones you are asked to review and the ones assigned to you, through glab or a token.",
+        "es": "Tus merge requests abiertas, las que te piden revisar y las que tienes asignadas, con glab o con un token."
+      },
+      "polled": true,
+      "intervalMs": 180000,
+      "options": {
+        "default": {
+          "host": "",
+          "token": "",
+          "bin": "glab"
+        },
+        "x-ui": {},
+        "type": "object",
+        "properties": {
+          "host": {
+            "title": "GitLab host",
+            "description": "Empty = glab's default host (gitlab.com with a token).",
+            "default": "",
+            "x-ui": {
+              "label": {
+                "en": "GitLab host",
+                "es": "Servidor de GitLab"
+              },
+              "help": {
+                "en": "Empty = glab's default host (gitlab.com with a token).",
+                "es": "Vacío = el servidor por defecto de glab (gitlab.com con token)."
+              },
+              "placeholder": "gitlab.com"
+            },
+            "x-risk": "network",
+            "type": "string"
+          },
+          "token": {
+            "title": "Access token",
+            "description": "A personal access token with read_api. Empty = use the glab CLI and its login. Secret: leave it empty (or a placeholder such as \"<token>\"). Kiosko keeps the value it already has, or asks for it in the editor.",
+            "default": "",
+            "x-ui": {
+              "label": {
+                "en": "Access token",
+                "es": "Token de acceso"
+              },
+              "help": {
+                "en": "A personal access token with read_api. Empty = use the glab CLI and its login.",
+                "es": "Un token personal con read_api. Vacío = usar el CLI glab y su sesión."
+              },
+              "secret": true
+            },
+            "x-secret": true,
+            "type": "string"
+          },
+          "bin": {
+            "title": "glab command",
+            "default": "glab",
+            "x-ui": {
+              "label": {
+                "en": "glab command",
+                "es": "Comando glab"
+              },
+              "advanced": true,
+              "format": "path"
+            },
+            "x-risk": "exec",
+            "type": "string"
+          }
+        }
+      }
+    }
+  ],
+  "interludes": [],
+  "templates": []
+}

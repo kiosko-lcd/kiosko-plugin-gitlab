@@ -20,6 +20,11 @@ npm install --prefix ~/.config/kiosko/plugins kiosko-plugin-gitlab
 
 - [`glab`](https://gitlab.com/gitlab-org/cli) logged in, or a personal access token with `read_api` in the source options.
 
+## What it does on your machine
+
+- **Internet**: contacts `gitlab.com`, the ones you set in its options.
+- **Runs**: `glab`.
+
 ## Widgets
 
 ### My pipelines — `gitlab/pipelines`
