@@ -6,7 +6,7 @@
  */
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { matchFilter, PluginError, type Filter, type Localized } from '@kiosko/sdk';
+import { localize, matchFilter, PluginError, type Filter, type Localized } from '@kiosko/sdk';
 
 /** GitLab answered that nobody is logged in: the token, or glab's login, is missing or wrong. */
 const NOT_LOGGED_IN: Localized = {
@@ -221,7 +221,21 @@ export function reviewItems(data: MyMergeRequests, o: ReviewFilter): { m: MergeR
 }
 
 /** Sample data for the gallery: made-up projects and people. */
-export function demoMergeRequests(now: number): MyMergeRequests {
+export function demoMergeRequests(now: number, locale = 'en'): MyMergeRequests {
+  // Titles a team writes in its own language: localized like any other text (scripts/i18n-gaps.ts).
+  const T = {
+    flaky: { en: 'Fix the flaky login test', es: 'Arreglar el test de login inestable', de: 'Wackeligen Login-Test reparieren', 'zh-Hant': '修正不穩定的登入測試', 'zh-Hans': '修复不稳定的登录测试' },
+    rateLimit: { en: 'Rate-limit the public endpoints', es: 'Limitar peticiones a endpoints públicos', de: 'Öffentliche Endpunkte drosseln', 'zh-Hant': '公開端點加上速率限制', 'zh-Hans': '公开接口加上限流' },
+    onboarding: { en: 'Update the onboarding guide', es: 'Actualizar la guía de bienvenida', de: 'Onboarding-Leitfaden aktualisieren', 'zh-Hant': '更新新人入門指南', 'zh-Hans': '更新新人入职指南' },
+    darkMode: { en: 'Dark mode toggle in settings', es: 'Interruptor de modo oscuro en ajustes', de: 'Dunkelmodus-Schalter in den Einstellungen', 'zh-Hant': '設定加入深色模式開關', 'zh-Hans': '设置中加入深色模式开关' },
+    offline: { en: 'Offline sync for drafts', es: 'Sincronizar borradores sin conexión', de: 'Offline-Sync für Entwürfe', 'zh-Hant': '草稿離線同步', 'zh-Hans': '草稿离线同步' },
+    certs: { en: 'Rotate the staging certificates', es: 'Rotar los certificados de staging', de: 'Staging-Zertifikate rotieren', 'zh-Hant': '更換測試環境憑證', 'zh-Hans': '轮换预发环境证书' },
+    perms: { en: 'Cache user permissions per request', es: 'Cachear permisos de usuario por petición', de: 'Benutzerrechte pro Anfrage cachen', 'zh-Hant': '每個請求快取使用者權限', 'zh-Hans': '按请求缓存用户权限' },
+    charts: { en: 'Move the charts to the new library', es: 'Pasar las gráficas a la nueva librería', de: 'Diagramme auf neue Bibliothek umstellen', 'zh-Hant': '圖表改用新的函式庫', 'zh-Hans': '图表迁移到新库' },
+    push: { en: 'Push notifications for replies', es: 'Notificaciones push de respuestas', de: 'Push-Benachrichtigungen für Antworten', 'zh-Hant': '回覆推播通知', 'zh-Hans': '回复推送通知' },
+  } satisfies Record<string, Localized>;
+  const n = (key: keyof typeof T) => localize(T[key], locale);
+
   const ago = (h: number) => new Date(now - h * 3_600_000).toISOString();
   const mr = (reference: string, title: string, pipeline: PipelineStatus | null, createdH: number, extra: Partial<MergeRequest> = {}): MergeRequest => ({
     reference, title, draft: false, createdAt: ago(createdH), updatedAt: ago(createdH / 3), author: 'you', approvedBy: [], pipeline, ...extra,
@@ -229,20 +243,20 @@ export function demoMergeRequests(now: number): MyMergeRequests {
   return {
     me: 'you',
     authored: [
-      mr('acme/web-app!412', 'Fix the flaky login test', 'FAILED', 30),
-      mr('acme/api!88', 'Rate-limit the public endpoints', 'RUNNING', 6),
-      mr('acme/docs!31', 'Update the onboarding guide', 'PENDING', 50),
-      mr('acme/web-app!405', 'Dark mode toggle in settings', 'SUCCESS', 120),
-      mr('acme/mobile!17', 'Offline sync for drafts', 'MANUAL', 200, { draft: true }),
+      mr('acme/web-app!412', n('flaky'), 'FAILED', 30),
+      mr('acme/api!88', n('rateLimit'), 'RUNNING', 6),
+      mr('acme/docs!31', n('onboarding'), 'PENDING', 50),
+      mr('acme/web-app!405', n('darkMode'), 'SUCCESS', 120),
+      mr('acme/mobile!17', n('offline'), 'MANUAL', 200, { draft: true }),
     ],
     toReview: [
-      mr('acme/api!91', 'Cache user permissions per request', 'RUNNING', 26, { author: 'sam' }),
-      mr('acme/infra!12', 'Rotate the staging certificates', 'FAILED', 3, { author: 'jordan' }),
-      mr('acme/web-app!398', 'Move the charts to the new library', 'SUCCESS', 130, { author: 'alex', approvedBy: ['you'] }),
+      mr('acme/api!91', n('perms'), 'RUNNING', 26, { author: 'sam' }),
+      mr('acme/infra!12', n('certs'), 'FAILED', 3, { author: 'jordan' }),
+      mr('acme/web-app!398', n('charts'), 'SUCCESS', 130, { author: 'alex', approvedBy: ['you'] }),
     ],
     assigned: [
-      mr('acme/web-app!412', 'Fix the flaky login test', 'FAILED', 30),
-      mr('acme/mobile!21', 'Push notifications for replies', 'SUCCESS', 70, { author: 'riley' }),
+      mr('acme/web-app!412', n('flaky'), 'FAILED', 30),
+      mr('acme/mobile!21', n('push'), 'SUCCESS', 70, { author: 'riley' }),
     ],
   };
 }

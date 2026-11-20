@@ -32,7 +32,7 @@ export const mergeRequests = defineSource({
   minIntervalMs: 60_000,
   timeoutMs: 20_000,
   read: ({ options, signal }) => readMergeRequests(options, signal),
-  demo: ({ now }) => demoMergeRequests(now),
+  demo: ({ now, locale }) => demoMergeRequests(now, locale),
 });
 
 const aliasesField = () =>
@@ -48,7 +48,7 @@ const projectsField = () => t.filter({ label: { en: 'Projects', es: 'Proyectos',
 const draftsField = () => t.boolean({ label: { en: 'Include drafts', es: 'Incluir borradores', de: 'Entwürfe einbeziehen', 'zh-Hant': '包含草稿', 'zh-Hans': '包含草稿' } });
 
 const dataOf = (sources: Record<string, unknown>) => sources[SOURCE] as MyMergeRequests | undefined;
-const demo = ({ now }: { now: number }) => ({ sources: { [SOURCE]: demoMergeRequests(now) } });
+const demo = ({ now, locale }: { now: number; locale: string }) => ({ sources: { [SOURCE]: demoMergeRequests(now, locale) } });
 
 export const pipelines = defineWidget({
   id: 'pipelines',
