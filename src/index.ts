@@ -161,6 +161,7 @@ export default definePlugin({
   id: 'gitlab',
   name: { en: 'GitLab', es: 'GitLab', 'zh-Hant': 'GitLab', 'zh-Hans': 'GitLab' },
   version: '0.2.1',
+  languages: ['en', 'es', 'zh-Hant', 'zh-Hans'],
   sdk: '^0.2.0',
   permissions: { network: ['gitlab.com', 'user'], exec: ['glab'] },
   description: { en: 'Your merge requests\' pipelines and the reviews waiting for you.', es: 'Los pipelines de tus merge requests y las revisiones que te esperan.', 'zh-Hant': '你的 MR 的管線，以及等你審查的 MR。', 'zh-Hans': '你的 MR 的流水线，以及等你审查的 MR。' },
