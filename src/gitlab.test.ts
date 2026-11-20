@@ -37,7 +37,7 @@ test('short references and pipeline looks', () => {
   assert.equal(shortRef('g/sub/integration-tests!120', { 'g/sub/integration-tests': 'itest' }), 'itest!120', 'alias by full path');
   const colors = { alert: 'r', warn: 'a', info: 'b', ok: 'v', inkDim: 'g' };
   assert.ok(pipelineLook('FAILED', colors).rank < pipelineLook('RUNNING', colors).rank && pipelineLook('RUNNING', colors).rank < pipelineLook('SUCCESS', colors).rank);
-  assert.deepEqual(pipelineLook(null, colors).label, { en: 'no CI', es: 'sin CI' });
+  assert.deepEqual(pipelineLook(null, colors).label, { en: 'no CI', es: 'sin CI', 'zh-Hant': '無 CI', 'zh-Hans': '无 CI' });
   assert.equal(pipelineLook('WAITING_FOR_RESOURCE', colors).color, 'a');
 });
 
