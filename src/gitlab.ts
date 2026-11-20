@@ -12,6 +12,7 @@ import { matchFilter, PluginError, type Filter, type Localized } from '@kiosko/s
 const NOT_LOGGED_IN: Localized = {
   en: 'Not logged in to GitLab: check the access token in this source, or run glab auth login',
   es: 'Sin sesión en GitLab: revisa el token de acceso de esta fuente o ejecuta glab auth login',
+  de: 'Nicht bei GitLab angemeldet: Prüfe das Zugriffstoken in dieser Datenquelle oder führe glab auth login aus',
   'zh-Hant': '尚未登入 GitLab：請檢查此資料來源的存取權杖，或執行 glab auth login',
   'zh-Hans': '尚未登录 GitLab：请检查此数据源的访问令牌，或运行 glab auth login',
 };
@@ -116,6 +117,7 @@ export async function readMergeRequests(c: Connection, signal: AbortSignal): Pro
     throw new PluginError({
       en: 'glab not found: install the GitLab CLI, or set an access token in this source',
       es: 'No se encuentra glab: instala el CLI de GitLab o pon un token de acceso en esta fuente',
+      de: 'glab nicht gefunden: Installiere die GitLab-CLI oder trage in dieser Datenquelle ein Zugriffstoken ein',
       'zh-Hant': '找不到 glab：請安裝 GitLab CLI，或在此資料來源中設定存取權杖',
       'zh-Hans': '找不到 glab：请安装 GitLab CLI，或在此数据源中设置访问令牌',
     }, { cause: e });
@@ -158,14 +160,14 @@ export interface Look {
 /** How each pipeline status is called and coloured; `rank` puts what's broken first. */
 export function pipelineLook(status: PipelineStatus | null, colors: { alert: string; warn: string; info: string; ok: string; inkDim: string }): Look {
   switch (status) {
-    case 'FAILED': return { label: { en: 'failed', es: 'falla', 'zh-Hant': '失敗', 'zh-Hans': '失败' }, color: colors.alert, rank: 0 };
-    case 'RUNNING': return { label: { en: 'running', es: 'en curso', 'zh-Hant': '執行中', 'zh-Hans': '运行中' }, color: colors.info, rank: 1 };
-    case 'PENDING': case 'CREATED': case 'PREPARING': case 'WAITING_FOR_RESOURCE': case 'SCHEDULED': return { label: { en: 'queued', es: 'en cola', 'zh-Hant': '排隊中', 'zh-Hans': '排队中' }, color: colors.warn, rank: 2 };
-    case 'MANUAL': return { label: { en: 'manual', es: 'manual', 'zh-Hant': '手動', 'zh-Hans': '手动' }, color: colors.warn, rank: 3 };
-    case 'SUCCESS': return { label: { en: 'passed', es: 'ok', 'zh-Hant': '通過', 'zh-Hans': '通过' }, color: colors.ok, rank: 4 };
-    case 'CANCELED': return { label: { en: 'canceled', es: 'cancelado', 'zh-Hant': '已取消', 'zh-Hans': '已取消' }, color: colors.inkDim, rank: 5 };
-    case 'SKIPPED': return { label: { en: 'skipped', es: 'saltado', 'zh-Hant': '已略過', 'zh-Hans': '已跳过' }, color: colors.inkDim, rank: 5 };
-    default: return { label: { en: 'no CI', es: 'sin CI', 'zh-Hant': '無 CI', 'zh-Hans': '无 CI' }, color: colors.inkDim, rank: 6 };
+    case 'FAILED': return { label: { en: 'failed', es: 'falla', de: 'Fehler', 'zh-Hant': '失敗', 'zh-Hans': '失败' }, color: colors.alert, rank: 0 };
+    case 'RUNNING': return { label: { en: 'running', es: 'en curso', de: 'läuft', 'zh-Hant': '執行中', 'zh-Hans': '运行中' }, color: colors.info, rank: 1 };
+    case 'PENDING': case 'CREATED': case 'PREPARING': case 'WAITING_FOR_RESOURCE': case 'SCHEDULED': return { label: { en: 'queued', es: 'en cola', de: 'eingereiht', 'zh-Hant': '排隊中', 'zh-Hans': '排队中' }, color: colors.warn, rank: 2 };
+    case 'MANUAL': return { label: { en: 'manual', es: 'manual', de: 'manuell', 'zh-Hant': '手動', 'zh-Hans': '手动' }, color: colors.warn, rank: 3 };
+    case 'SUCCESS': return { label: { en: 'passed', es: 'ok', de: 'ok', 'zh-Hant': '通過', 'zh-Hans': '通过' }, color: colors.ok, rank: 4 };
+    case 'CANCELED': return { label: { en: 'canceled', es: 'cancelado', de: 'abgebrochen', 'zh-Hant': '已取消', 'zh-Hans': '已取消' }, color: colors.inkDim, rank: 5 };
+    case 'SKIPPED': return { label: { en: 'skipped', es: 'saltado', de: 'übersprungen', 'zh-Hant': '已略過', 'zh-Hans': '已跳过' }, color: colors.inkDim, rank: 5 };
+    default: return { label: { en: 'no CI', es: 'sin CI', de: 'kein CI', 'zh-Hant': '無 CI', 'zh-Hans': '无 CI' }, color: colors.inkDim, rank: 6 };
   }
 }
 
