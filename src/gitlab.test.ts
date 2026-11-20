@@ -2,8 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createCanvas } from '@napi-rs/canvas';
 import * as realKit from '@loksly/lcd-canvas-kit';
-import { createBaseContext, DEFAULT_THEME, validate, type WidgetDefinition } from '@kiosko/sdk';
-import { demoMergeRequests, graphqlUrl, inProjects, parseMergeRequests, pipelineItems, pipelineLook, reviewItems, shortRef, type MergeRequest, type MyMergeRequests } from './gitlab.ts';
+import { createBaseContext, DEFAULT_THEME, errorMessage, validate, type WidgetDefinition } from '@kiosko/sdk';
+import { demoMergeRequests, graphqlUrl, inProjects, parseMergeRequests, pipelineItems, readMergeRequests, pipelineLook, reviewItems, shortRef, type MergeRequest, type MyMergeRequests } from './gitlab.ts';
 import plugin, { pipelines, reviews } from './index.ts';
 
 const node = (ref: string, status: string | null, extra = {}) => ({
@@ -27,7 +27,8 @@ test('merge requests: own, to review and assigned from one query', () => {
   assert.deepEqual(d.toReview[0]!.approvedBy, ['me']);
   assert.equal(d.assigned[0]!.reference, 'g/api!7');
   assert.throws(() => parseMergeRequests(JSON.stringify({ errors: [{ message: 'forbidden' }] })), /forbidden/);
-  assert.throws(() => parseMergeRequests(JSON.stringify({ data: { currentUser: null } })), /not logged in/);
+  assert.throws(() => parseMergeRequests(JSON.stringify({ data: { currentUser: null } })), /Not logged in/);
+  assert.throws(() => parseMergeRequests(JSON.stringify({ data: { currentUser: null } })), (e: unknown) => /尚未登入 GitLab/.test(errorMessage(e, 'zh-TW')) && /尚未登录 GitLab/.test(errorMessage(e, 'zh-CN')));
 });
 
 test('short references and pipeline looks', () => {
@@ -157,4 +158,12 @@ test('plugin: both widgets read the shared source and have demo data for it', ()
   }
   const token = (source?.options as { props: Record<string, { secret?: boolean }> }).props.token;
   assert.equal(token?.secret, true);
+});
+
+test('read: without glab and without a token, an error the user can act on, in their language', async () => {
+  await assert.rejects(readMergeRequests({ bin: '/nonexistent/glab', host: '', token: '' }, new AbortController().signal), (e: unknown) => {
+    assert.match((e as Error).message, /glab not found/);
+    assert.match(errorMessage(e, 'zh-TW'), /找不到 glab/);
+    return true;
+  });
 });
