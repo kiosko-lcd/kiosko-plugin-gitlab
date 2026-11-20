@@ -19,7 +19,7 @@ export const mergeRequests = defineSource({
     en: 'Your open merge requests, the ones you are asked to review and the ones assigned to you, through glab or a token.',
     es: 'Tus merge requests abiertas, las que te piden revisar y las que tienes asignadas, con glab o con un token.',
     'zh-Hant': '透過 glab 或權杖取得：你開啟中的 MR、請你審查的 MR，以及指派給你的 MR。',
-    'zh-Hans': '通过 glab 或令牌获取：你打开的 MR、请你审查的 MR，以及指派给你的 MR。',
+    'zh-Hans': '通过 glab 或令牌获取：你开放中的 MR、请你审查的 MR，以及指派给你的 MR。',
   },
   options: t.object({
     host: t.string({ placeholder: 'gitlab.com', risk: 'network', label: { en: 'GitLab host', es: 'Servidor de GitLab', 'zh-Hant': 'GitLab 主機', 'zh-Hans': 'GitLab 主机' }, help: { en: 'Empty = glab\'s default host (gitlab.com with a token).', es: 'Vacío = el servidor por defecto de glab (gitlab.com con token).', 'zh-Hant': '留空 = glab 的預設主機（使用權杖時為 gitlab.com）。', 'zh-Hans': '留空 = glab 的默认主机（使用令牌时为 gitlab.com）。' } }),
@@ -56,7 +56,7 @@ export const pipelines = defineWidget({
     en: 'The pipeline of each of your open merge requests: broken first, then running and queued, passing last.',
     es: 'El pipeline de cada una de tus merge requests abiertas: lo roto primero, luego lo que corre y espera, lo que pasa al final.',
     'zh-Hant': '你每個開啟中 MR 的管線：失敗的優先，接著是執行中與排隊中，通過的排最後。',
-    'zh-Hans': '你每个打开的 MR 的流水线：失败的优先，然后是运行中和排队中，通过的排最后。',
+    'zh-Hans': '你每个开放中 MR 的流水线：失败的优先，然后是运行中和排队中，通过的排最后。',
   },
   icon: 'git-pull-request',
   category: 'dev',
@@ -80,7 +80,7 @@ export const pipelines = defineWidget({
     if (!data) return;
     const { colors } = theme;
     const list = pipelineItems(data, options);
-    if (!list.length) return drawEmpty(g, ctx, tr({ en: 'No open merge requests', es: 'Ninguna MR abierta', 'zh-Hant': '沒有開啟中的 MR', 'zh-Hans': '没有打开的 MR' }));
+    if (!list.length) return drawEmpty(g, ctx, tr({ en: 'No open merge requests', es: 'Ninguna MR abierta', 'zh-Hant': '沒有開啟中的 MR', 'zh-Hans': '没有开放中的 MR' }));
     const plan = listLayout(box, list.length, options, {
       sizes: { 'one-line': { min: 22, max: Math.max(22, Math.min(46, box.w / 10)) }, detailed: { min: 40, max: Math.max(40, Math.min(80, box.w / 5)) } },
       // Tall tiles with room: two lines per merge request (title; status and reference).
