@@ -5,6 +5,7 @@
   "name": {
     "en": "GitLab",
     "es": "GitLab",
+    "de": "GitLab",
     "zh-Hant": "GitLab",
     "zh-Hans": "GitLab"
   },
@@ -12,6 +13,7 @@
   "description": {
     "en": "Your merge requests' pipelines and the reviews waiting for you.",
     "es": "Los pipelines de tus merge requests y las revisiones que te esperan.",
+    "de": "Die Pipelines deiner Merge Requests und die Reviews, die auf dich warten.",
     "zh-Hant": "你的 MR 的管線，以及等你審查的 MR。",
     "zh-Hans": "你的 MR 的流水线，以及等你审查的 MR。"
   },
@@ -29,6 +31,7 @@
   "languages": [
     "en",
     "es",
+    "de",
     "zh-Hant",
     "zh-Hans"
   ],
@@ -78,12 +81,14 @@
       "name": {
         "en": "My pipelines",
         "es": "Mis pipelines",
+        "de": "Meine Pipelines",
         "zh-Hant": "我的管線",
         "zh-Hans": "我的流水线"
       },
       "description": {
         "en": "The pipeline of each of your open merge requests: broken first, then running and queued, passing last.",
         "es": "El pipeline de cada una de tus merge requests abiertas: lo roto primero, luego lo que corre y espera, lo que pasa al final.",
+        "de": "Die Pipeline jedes deiner offenen Merge Requests: fehlgeschlagene zuerst, dann laufende und wartende, erfolgreiche zuletzt.",
         "zh-Hant": "你每個開啟中 MR 的管線：失敗的優先，接著是執行中與排隊中，通過的排最後。",
         "zh-Hans": "你每个开放中 MR 的流水线：失败的优先，然后是运行中和排队中，通过的排最后。"
       },
@@ -127,12 +132,14 @@
               "label": {
                 "en": "Rows",
                 "es": "Filas",
+                "de": "Zeilen",
                 "zh-Hant": "列數",
                 "zh-Hans": "行数"
               },
               "help": {
                 "en": "0 = as many as fit. A number shows that many, in rows of a readable size (fewer when the tile is too small for them); the rest are counted in \"+N more\".",
                 "es": "0 = las que quepan. Con un número se ven esas, en filas de un tamaño legible (menos si la tesela no da para ellas); el resto se cuenta en «+N más».",
+                "de": "0 = so viele, wie passen. Eine Zahl zeigt so viele, in Zeilen lesbarer Größe (weniger, wenn die Kachel dafür zu klein ist); der Rest wird als „+N weitere“ gezählt.",
                 "zh-Hant": "0 = 盡量放滿。填數字則顯示該數量，並以易讀的大小排列（方格太小時會減少）；其餘的計入「還有 N 個」。",
                 "zh-Hans": "0 = 尽量放满。填数字则显示该数量，并以易读的大小排列（格子太小时会减少）；其余的计入“还有 N 个”。"
               }
@@ -149,12 +156,14 @@
               "label": {
                 "en": "Row layout",
                 "es": "Formato de fila",
+                "de": "Zeilenlayout",
                 "zh-Hant": "列版面",
                 "zh-Hans": "行布局"
               },
               "help": {
                 "en": "Automatic: the widget picks by the tile's shape.",
                 "es": "Automático: el widget elige según la forma de la tesela.",
+                "de": "Automatisch: Das Widget wählt nach der Form der Kachel.",
                 "zh-Hant": "自動：小工具依方格形狀選擇。",
                 "zh-Hans": "自动：小组件根据格子形状选择。"
               },
@@ -162,18 +171,21 @@
                 "auto": {
                   "en": "Automatic",
                   "es": "Automático",
+                  "de": "Automatisch",
                   "zh-Hant": "自動",
                   "zh-Hans": "自动"
                 },
                 "one-line": {
                   "en": "One line",
                   "es": "Una línea",
+                  "de": "Eine Zeile",
                   "zh-Hant": "單行",
                   "zh-Hans": "单行"
                 },
                 "detailed": {
                   "en": "Detailed",
                   "es": "Detallado",
+                  "de": "Ausführlich",
                   "zh-Hant": "詳細",
                   "zh-Hans": "详细"
                 }
@@ -194,12 +206,14 @@
               "label": {
                 "en": "Projects",
                 "es": "Proyectos",
+                "de": "Projekte",
                 "zh-Hant": "專案",
                 "zh-Hans": "项目"
               },
               "help": {
                 "en": "Empty: all. Names or patterns, comma-separated: * matches anything, a leading ! leaves out (web, acme/*, !*-old).",
                 "es": "Vacío: todos. Nombres o patrones separados por comas: * vale por cualquier cosa y un ! delante excluye (web, acme/*, !*-old).",
+                "de": "Leer: alle. Namen oder Muster, durch Kommas getrennt: * steht für alles, ein ! davor schließt aus (web, acme/*, !*-old).",
                 "zh-Hant": "留空：全部。填入名稱或模式，以逗號分隔：* 代表任意字元，開頭加 ! 則排除（web, acme/*, !*-old）。",
                 "zh-Hans": "留空：全部。填写名称或模式，用逗号分隔：* 匹配任意内容，开头加 ! 表示排除（web, acme/*, !*-old）。"
               },
@@ -223,12 +237,14 @@
               "label": {
                 "en": "Hide passing pipelines",
                 "es": "Ocultar los pipelines que pasan",
+                "de": "Erfolgreiche Pipelines ausblenden",
                 "zh-Hant": "隱藏通過的管線",
                 "zh-Hans": "隐藏通过的流水线"
               },
               "help": {
                 "en": "Only what is broken, running or waiting.",
                 "es": "Sólo lo roto, lo que corre y lo que espera.",
+                "de": "Nur was fehlschlägt, läuft oder wartet.",
                 "zh-Hant": "只顯示失敗、執行中或等待中的。",
                 "zh-Hans": "只显示失败、运行中或等待中的。"
               }
@@ -242,6 +258,7 @@
               "label": {
                 "en": "Include drafts",
                 "es": "Incluir borradores",
+                "de": "Entwürfe einbeziehen",
                 "zh-Hant": "包含草稿",
                 "zh-Hans": "包含草稿"
               }
@@ -256,12 +273,14 @@
               "label": {
                 "en": "Short project names",
                 "es": "Nombres cortos de proyecto",
+                "de": "Kurze Projektnamen",
                 "zh-Hant": "專案簡稱",
                 "zh-Hans": "项目简称"
               },
               "help": {
                 "en": "Project (as in its path) → what to show, e.g. web-frontend → web.",
                 "es": "Proyecto (como en su ruta) → lo que se muestra, p. ej. web-frontend → web.",
+                "de": "Projekt (wie in seinem Pfad) → was angezeigt wird, z. B. web-frontend → web.",
                 "zh-Hant": "專案（依其路徑）→ 顯示內容，例如 web-frontend → web。",
                 "zh-Hans": "项目（按其路径）→ 显示内容，例如 web-frontend → web。"
               },
@@ -283,12 +302,14 @@
       "name": {
         "en": "Reviews for me",
         "es": "Te toca revisar",
+        "de": "Reviews für mich",
         "zh-Hant": "待我審查",
         "zh-Hans": "待我审查"
       },
       "description": {
         "en": "Merge requests waiting for your review: whose, how long they have waited and how their pipeline is doing. The ones you approved sink, dimmed.",
         "es": "Las merge requests que te toca revisar: de quién son, cuánto llevan esperando y cómo va su pipeline. Las que ya aprobaste bajan, atenuadas.",
+        "de": "Merge Requests, die auf dein Review warten: von wem, wie lange schon und wie ihre Pipeline steht. Die von dir genehmigten rutschen gedimmt nach unten.",
         "zh-Hant": "等你審查的 MR：作者、已等多久，以及管線狀況。你已核准的會往下沉並變暗。",
         "zh-Hans": "等你审查的 MR：作者、已等多久，以及流水线状况。你已批准的会沉到下方并变暗。"
       },
@@ -333,12 +354,14 @@
               "label": {
                 "en": "Rows",
                 "es": "Filas",
+                "de": "Zeilen",
                 "zh-Hant": "列數",
                 "zh-Hans": "行数"
               },
               "help": {
                 "en": "0 = as many as fit. A number shows that many, in rows of a readable size (fewer when the tile is too small for them); the rest are counted in \"+N more\".",
                 "es": "0 = las que quepan. Con un número se ven esas, en filas de un tamaño legible (menos si la tesela no da para ellas); el resto se cuenta en «+N más».",
+                "de": "0 = so viele, wie passen. Eine Zahl zeigt so viele, in Zeilen lesbarer Größe (weniger, wenn die Kachel dafür zu klein ist); der Rest wird als „+N weitere“ gezählt.",
                 "zh-Hant": "0 = 盡量放滿。填數字則顯示該數量，並以易讀的大小排列（方格太小時會減少）；其餘的計入「還有 N 個」。",
                 "zh-Hans": "0 = 尽量放满。填数字则显示该数量，并以易读的大小排列（格子太小时会减少）；其余的计入“还有 N 个”。"
               }
@@ -355,12 +378,14 @@
               "label": {
                 "en": "Row layout",
                 "es": "Formato de fila",
+                "de": "Zeilenlayout",
                 "zh-Hant": "列版面",
                 "zh-Hans": "行布局"
               },
               "help": {
                 "en": "Automatic: the widget picks by the tile's shape.",
                 "es": "Automático: el widget elige según la forma de la tesela.",
+                "de": "Automatisch: Das Widget wählt nach der Form der Kachel.",
                 "zh-Hant": "自動：小工具依方格形狀選擇。",
                 "zh-Hans": "自动：小组件根据格子形状选择。"
               },
@@ -368,18 +393,21 @@
                 "auto": {
                   "en": "Automatic",
                   "es": "Automático",
+                  "de": "Automatisch",
                   "zh-Hant": "自動",
                   "zh-Hans": "自动"
                 },
                 "one-line": {
                   "en": "One line",
                   "es": "Una línea",
+                  "de": "Eine Zeile",
                   "zh-Hant": "單行",
                   "zh-Hans": "单行"
                 },
                 "detailed": {
                   "en": "Detailed",
                   "es": "Detallado",
+                  "de": "Ausführlich",
                   "zh-Hant": "詳細",
                   "zh-Hans": "详细"
                 }
@@ -400,12 +428,14 @@
               "label": {
                 "en": "Projects",
                 "es": "Proyectos",
+                "de": "Projekte",
                 "zh-Hant": "專案",
                 "zh-Hans": "项目"
               },
               "help": {
                 "en": "Empty: all. Names or patterns, comma-separated: * matches anything, a leading ! leaves out (web, acme/*, !*-old).",
                 "es": "Vacío: todos. Nombres o patrones separados por comas: * vale por cualquier cosa y un ! delante excluye (web, acme/*, !*-old).",
+                "de": "Leer: alle. Namen oder Muster, durch Kommas getrennt: * steht für alles, ein ! davor schließt aus (web, acme/*, !*-old).",
                 "zh-Hant": "留空：全部。填入名稱或模式，以逗號分隔：* 代表任意字元，開頭加 ! 則排除（web, acme/*, !*-old）。",
                 "zh-Hans": "留空：全部。填写名称或模式，用逗号分隔：* 匹配任意内容，开头加 ! 表示排除（web, acme/*, !*-old）。"
               },
@@ -428,6 +458,7 @@
               "label": {
                 "en": "Include drafts",
                 "es": "Incluir borradores",
+                "de": "Entwürfe einbeziehen",
                 "zh-Hant": "包含草稿",
                 "zh-Hans": "包含草稿"
               }
@@ -441,6 +472,7 @@
               "label": {
                 "en": "Hide the ones I approved",
                 "es": "Ocultar las que ya aprobé",
+                "de": "Von mir genehmigte ausblenden",
                 "zh-Hant": "隱藏我已核准的",
                 "zh-Hans": "隐藏我已批准的"
               }
@@ -455,12 +487,14 @@
               "label": {
                 "en": "Include the ones assigned to me",
                 "es": "Incluir las que tengo asignadas",
+                "de": "Mir zugewiesene einbeziehen",
                 "zh-Hant": "包含指派給我的",
                 "zh-Hans": "包含指派给我的"
               },
               "help": {
                 "en": "For teams that assign a merge request to its reviewer instead of requesting a review. Your own are left out.",
                 "es": "Para equipos que asignan la merge request a quien la revisa en vez de pedirle revisión. Las tuyas no se cuentan.",
+                "de": "Für Teams, die einen Merge Request dem Reviewer zuweisen, statt ein Review anzufragen. Deine eigenen bleiben außen vor.",
                 "zh-Hant": "適用於把 MR 指派給審查者、而非發出審查要求的團隊。你自己的 MR 不計入。",
                 "zh-Hans": "适用于把 MR 指派给审查人、而不是发起审查请求的团队。你自己的 MR 不计入。"
               }
@@ -475,12 +509,14 @@
               "label": {
                 "en": "Short project names",
                 "es": "Nombres cortos de proyecto",
+                "de": "Kurze Projektnamen",
                 "zh-Hant": "專案簡稱",
                 "zh-Hans": "项目简称"
               },
               "help": {
                 "en": "Project (as in its path) → what to show, e.g. web-frontend → web.",
                 "es": "Proyecto (como en su ruta) → lo que se muestra, p. ej. web-frontend → web.",
+                "de": "Projekt (wie in seinem Pfad) → was angezeigt wird, z. B. web-frontend → web.",
                 "zh-Hant": "專案（依其路徑）→ 顯示內容，例如 web-frontend → web。",
                 "zh-Hans": "项目（按其路径）→ 显示内容，例如 web-frontend → web。"
               },
@@ -504,12 +540,14 @@
       "name": {
         "en": "GitLab merge requests",
         "es": "Merge requests de GitLab",
+        "de": "GitLab-Merge-Requests",
         "zh-Hant": "GitLab 合併要求",
         "zh-Hans": "GitLab 合并请求"
       },
       "description": {
         "en": "Your open merge requests, the ones you are asked to review and the ones assigned to you, through glab or a token.",
         "es": "Tus merge requests abiertas, las que te piden revisar y las que tienes asignadas, con glab o con un token.",
+        "de": "Deine offenen Merge Requests, die, für die ein Review von dir angefragt ist, und die dir zugewiesenen, über glab oder ein Token.",
         "zh-Hant": "透過 glab 或權杖取得：你開啟中的 MR、請你審查的 MR，以及指派給你的 MR。",
         "zh-Hans": "通过 glab 或令牌获取：你开放中的 MR、请你审查的 MR，以及指派给你的 MR。"
       },
@@ -532,12 +570,14 @@
               "label": {
                 "en": "GitLab host",
                 "es": "Servidor de GitLab",
+                "de": "GitLab-Host",
                 "zh-Hant": "GitLab 主機",
                 "zh-Hans": "GitLab 主机"
               },
               "help": {
                 "en": "Empty = glab's default host (gitlab.com with a token).",
                 "es": "Vacío = el servidor por defecto de glab (gitlab.com con token).",
+                "de": "Leer = der Standard-Host von glab (mit Token gitlab.com).",
                 "zh-Hant": "留空 = glab 的預設主機（使用權杖時為 gitlab.com）。",
                 "zh-Hans": "留空 = glab 的默认主机（使用令牌时为 gitlab.com）。"
               },
@@ -554,12 +594,14 @@
               "label": {
                 "en": "Access token",
                 "es": "Token de acceso",
+                "de": "Zugriffstoken",
                 "zh-Hant": "存取權杖",
                 "zh-Hans": "访问令牌"
               },
               "help": {
                 "en": "A personal access token with read_api. Empty = use the glab CLI and its login.",
                 "es": "Un token personal con read_api. Vacío = usar el CLI glab y su sesión.",
+                "de": "Ein Personal Access Token mit read_api. Leer = die glab-CLI und ihre Anmeldung verwenden.",
                 "zh-Hant": "具備 read_api 的個人存取權杖。留空 = 使用 glab CLI 及其登入。",
                 "zh-Hans": "具有 read_api 的个人访问令牌。留空 = 使用 glab CLI 及其登录。"
               },
@@ -575,6 +617,7 @@
               "label": {
                 "en": "glab command",
                 "es": "Comando glab",
+                "de": "glab-Befehl",
                 "zh-Hant": "glab 指令",
                 "zh-Hans": "glab 命令"
               },
