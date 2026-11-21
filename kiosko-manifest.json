@@ -9,7 +9,7 @@
     "zh-Hant": "GitLab",
     "zh-Hans": "GitLab"
   },
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": {
     "en": "Your merge requests' pipelines and the reviews waiting for you.",
     "es": "Los pipelines de tus merge requests y las revisiones que te esperan.",
