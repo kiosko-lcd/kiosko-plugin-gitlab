@@ -4,7 +4,7 @@
   "description": "GitLab cards: the pipelines of your open merge requests and the ones waiting for your review.",
   "type": "module",
   "license": "MIT",
-  "author": "Loksly",
+  "author": "Loksly <info@kioskolcd.dev> (https://kioskolcd.dev)",
   "keywords": [
     "kiosko",
     "kiosko-plugin",
