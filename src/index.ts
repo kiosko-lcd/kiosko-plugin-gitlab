@@ -163,7 +163,7 @@ export const reviews = defineWidget({
 export default definePlugin({
   id: 'gitlab',
   name: { en: 'GitLab', es: 'GitLab', de: 'GitLab', 'zh-Hant': 'GitLab', 'zh-Hans': 'GitLab' },
-  version: '0.2.1',
+  version: '0.2.2',
   languages: ['en', 'es', 'de', 'zh-Hant', 'zh-Hans'],
   sdk: '^0.2.0',
   permissions: { network: ['gitlab.com', 'user'], exec: ['glab'] },
