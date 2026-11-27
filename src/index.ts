@@ -1,7 +1,9 @@
 /**
  * GitLab at a glance: the pipelines of your open merge requests (broken
  * first, in red) and the merge requests waiting for your review. Both read
- * one shared source, configured once in Settings → Sources.
+ * one shared source, configured in Settings → Sources. It has profiles
+ * (Kiosko 0.2.12 on): gitlab.com and a company host, each with its own
+ * token, and each tile picks one.
  */
 import { defineSource, definePlugin, defineWidget, drawEmpty, listLayout, listOptions, t } from '@kiosko/sdk';
 import { drawLines } from './draw.ts';
@@ -33,6 +35,9 @@ export const mergeRequests = defineSource({
   timeoutMs: 20_000,
   read: ({ options, signal }) => readMergeRequests(options, signal),
   demo: ({ now, locale }) => demoMergeRequests(now, locale),
+  // Several accounts (gitlab.com and a company host), each with its host and token: Kiosko 0.2.12 and
+  // later; older ones ignore it. Each read is one query and keeps nothing, so profiles share no state.
+  ...({ profiles: true } as {}),
 });
 
 const aliasesField = () =>
@@ -163,7 +168,7 @@ export const reviews = defineWidget({
 export default definePlugin({
   id: 'gitlab',
   name: { en: 'GitLab', es: 'GitLab', de: 'GitLab', 'zh-Hant': 'GitLab', 'zh-Hans': 'GitLab' },
-  version: '0.2.2',
+  version: '0.3.0',
   languages: ['en', 'es', 'de', 'zh-Hant', 'zh-Hans'],
   sdk: '^0.2.0',
   permissions: { network: ['gitlab.com', 'user'], exec: ['glab'] },
