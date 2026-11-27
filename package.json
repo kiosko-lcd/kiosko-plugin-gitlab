@@ -1,6 +1,6 @@
 {
   "name": "kiosko-plugin-gitlab",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "GitLab cards: the pipelines of your open merge requests and the ones waiting for your review.",
   "type": "module",
   "license": "MIT",

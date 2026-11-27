@@ -66,13 +66,19 @@ Uses: `gitlab/merge-requests`.
 
 ### GitLab merge requests — `gitlab/merge-requests`
 
-Your open merge requests, the ones you are asked to review and the ones assigned to you, through glab or a token. Read every 3 min while a widget uses it. Options are set once in Kiosko → Settings → Data sources.
+Your open merge requests, the ones you are asked to review and the ones assigned to you, through glab or a token. Read every 3 min while a widget uses it. Options are set in Kiosko → Settings → Data sources.
 
 | Option | Type | Default | |
 |---|---|---|---|
 | `host` | string | `""` | GitLab host. Empty = glab's default host (gitlab.com with a token). |
 | `token` | string | *(secret)* | Access token. A personal access token with read_api. Empty = use the glab CLI and its login. |
 | `bin` | string | `"glab"` | glab command |
+
+### Several accounts
+
+With Kiosko 0.2.12 and later the source can have **profiles**: named configurations, each with its own host and token, say «GitLab.com» for your own projects and «Work» for your company's GitLab (`gitlab.example.com`). A profile without a token uses glab's login for its host (`glab auth login --hostname gitlab.example.com`).
+
+Each profile is read on its own and each tile picks its profile in the inspector (**Source profile**; **New profile…** makes one from the tile), so a pipelines card for work and another for your own projects can share a screen. Settings → Data sources shows the profiles as tabs. A tile with no profile reads the source's own options, as before; with older Kiosko versions there is one account.
 
 ## Development
 
